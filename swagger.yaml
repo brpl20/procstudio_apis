@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
-  title: ProcStudio API
-  description: API for Lawyers and Document Processing (OCR)
+  title: ProcStudio APIs externas 
+  description: Legal Data API para consulta de informações de advogados por OAB e Processamento de Documentos - Document Processing (OCR)
   version: 1.0.0
   termsOfService: "pending"
   contact:
@@ -10,13 +10,13 @@ info:
     name: Private
 
 servers:
-  - url: http://168.231.90.14/v1
+  - url: http://168.231.90.14/api/v1
     description: Legal Data API Server
-  - url: https://168.231.91.47/v1
+  - url: https://168.231.91.47/api/v1
     description: Document Processing (OCR) API Server
 
 paths:
-  /api/v1/lawyer/{oab_number}:
+  lawyer/{oab_number}:
     get:
       summary: Get Lawyer Information
       parameters:
