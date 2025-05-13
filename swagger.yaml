@@ -10,20 +10,20 @@ info:
     name: Private
 
 servers:
-  - url: http://168.231.90.14:3000/v1
-    description: Lawyers API Server
-  - url: https://procstudioapiocr.com.br/v1
-    description: Document Processing API Server
+  - url: http://168.231.90.14/v1
+    description: Legal Data API Server
+  - url: https://168.231.91.47/v1
+    description: Document Processing (OCR) API Server
 
 paths:
-  /lawyer/{oab_number}:
+  /api/v1/lawyer/{oab_number}:
     get:
       summary: Get Lawyer Information
       parameters:
         - name: oab_number
           in: path
           required: true
-          description: The OAB number of the lawyer
+          description: The State followed by _ and number of the lawyer - PR_54159
           schema:
             type: string
       responses:
@@ -34,7 +34,98 @@ paths:
               schema:
                 type: object
                 properties:
-                  # Define the properties of the lawyer information here
+                  id:
+                    type: integer
+                    example: 328782
+                  full_name:
+                    type: string
+                    example: "BRUNO PELLIZZETTI"
+                  oab_number:
+                    type: string
+                    example: "54159"
+                  city:
+                    type: string
+                    example: "CASCAVEL"
+                  state:
+                    type: string
+                    example: "PR"
+                  address:
+                    type: string
+                    example: "RUA PARANA, Nº 3033 SL 143, CENTRO."
+                  zip_code:
+                    type: string
+                    example: "Bsst0010"
+                  phone_number_1:
+                    type: string
+                    example: "(45)8405-5504"
+                  phone_number_2:
+                    type: string
+                    nullable: true
+                    example: null
+                  profile_picture:
+                    type: string
+                    example: "https://oabapi-profile-pic.s3.amazonaws.com/PR_54159_profile_pic.jpg"
+                  cna_picture:
+                    type: string
+                    example: "PR_54159.jpg"
+                  situation:
+                    type: string
+                    example: "situação regular"
+                  suplementary:
+                    type: boolean
+                    example: false
+                  is_procstudio:
+                    type: string
+                    nullable: true
+                    example: null
+                  has_society:
+                    type: string
+                    nullable: true
+                    example: null
+                  society_id:
+                    type: string
+                    nullable: true
+                    example: null
+                  specialty:
+                    type: string
+                    nullable: true
+                    example: null
+                  bio:
+                    type: string
+                    nullable: true
+                    example: null
+                  email:
+                    type: string
+                    nullable: true
+                    example: null
+                  instagram:
+                    type: string
+                    nullable: true
+                    example: null
+                  website:
+                    type: string
+                    nullable: true
+                    example: null
+                  created_at:
+                    type: string
+                    format: date-time
+                    example: "2025-04-24T13:12:23.955Z"
+                  updated_at:
+                    type: string
+                    format: date-time
+                    example: "2025-04-24T13:12:23.955Z"
+                  oab_id:
+                    type: string
+                    example: "PR_54159"
+                  profession:
+                    type: string
+                    example: "ADVOGADO"
+                  folder_id:
+                    type: string
+                    example: "Pasta16_cropped"
+                  original_address:
+                    type: string
+                    example: "RUA PARANA, Nº 3033 SL 143, CENTRO.\nCASCAVEL - PR\nBsst0010"
       security:
         - ApiKeyAuth: []
 
@@ -56,7 +147,139 @@ paths:
               schema:
                 type: object
                 properties:
-                  # Define the properties of the lawyer information here
+                  status_validation:
+                    type: object
+                    properties:
+                      valid:
+                        type: boolean
+                        example: true
+                      message:
+                        type: string
+                        example: "Situação regular"
+                      code:
+                        type: string
+                        example: "active"
+                  regular_view:
+                    type: object
+                    properties:
+                      situation:
+                        type: string
+                        example: "situação regular"
+                      full_name:
+                        type: string
+                        example: "BRUNO PELLIZZETTI"
+                      oab_number:
+                        type: string
+                        example: "54159"
+                      city:
+                        type: string
+                        example: "CASCAVEL"
+                      state:
+                        type: string
+                        example: "PR"
+                      address:
+                        type: string
+                        example: "RUA PARANA, Nº 3033 SL 143, CENTRO."
+                      original_address:
+                        type: string
+                        example: "RUA PARANA, Nº 3033 SL 143, CENTRO.\nCASCAVEL - PR\nBsst0010"
+                      zip_code:
+                        type: string
+                        example: "Bsst0010"
+                      phone_number_1:
+                        type: string
+                        example: "(45)8405-5504"
+                      phone_number_2:
+                        type: string
+                        nullable: true
+                        example: null
+                      supplementary:
+                        type: boolean
+                        example: false
+                      profession:
+                        type: string
+                        example: "ADVOGADO"
+                      profile_picture:
+                        type: string
+                        example: "https://oabapi-profile-pic.s3.amazonaws.com/PR_54159_profile_pic.jpg"
+                  debug_info:
+                    type: object
+                    properties:
+                      folder_id:
+                        type: string
+                        example: "Pasta16_cropped"
+                      cna_picture:
+                        type: string
+                        example: "https://oabapi.s3.amazonaws.com/PR_54159.jpg"
+                      is_procstudio:
+                        type: string
+                        nullable: true
+                        example: null
+                      has_society:
+                        type: string
+                        nullable: true
+                        example: null
+                      society_id:
+                        type: string
+                        nullable: true
+                        example: null
+                      specialty:
+                        type: string
+                        nullable: true
+                        example: null
+                      bio:
+                        type: string
+                        nullable: true
+                        example: null
+                      email:
+                        type: string
+                        nullable: true
+                        example: null
+                      instagram:
+                        type: string
+                        nullable: true
+                        example: null
+                      website:
+                        type: string
+                        nullable: true
+                        example: null
+                      created_at:
+                        type: string
+                        format: date-time
+                        example: "2025-04-24T13:12:23.955Z"
+                      updated_at:
+                        type: string
+                        format: date-time
+                        example: "2025-04-24T13:12:23.955Z"
+                  request_context:
+                    type: object
+                    properties:
+                      requester:
+                        type: object
+                        properties:
+                          user_id:
+                            type: integer
+                            example: 1
+                          api_key_id:
+                            type: integer
+                            example: 1
+                      ip:
+                        type: string
+                        example: "201.21.161.236"
+                      user_agent:
+                        type: string
+                        example: "curl/8.7.1"
+                      request_time:
+                        type: string
+                        format: date-time
+                        example: "2025-05-13T17:31:15.482+00:00"
+                      response_time:
+                        type: string
+                        format: date-time
+                        example: "2025-05-13T17:31:15.489+00:00"
+                      duration_ms:
+                        type: number
+                        example: 7.22
       security:
         - ApiKeyAuth: []
 
@@ -81,7 +304,28 @@ paths:
               schema:
                 type: object
                 properties:
-                  # Define the properties of the CNH data here
+                  name:
+                    type: string
+                    example: "John Doe"
+                  cpf:
+                    type: string
+                    example: "123.456.789-00"
+                  rg:
+                    type: string
+                    example: "MG-12.345.678"
+                  nascimento:
+                    type: string
+                    format: date
+                    example: "1990-01-01"
+                  nome_do_pai:
+                    type: string
+                    example: "John Doe Sr."
+                  nome_da_mae:
+                    type: string
+                    example: "Jane Doe"
+                  picture_3x4:
+                    type: string
+                    example: "https://example.com/picture.jpg"
       security:
         - ApiKeyAuth: []
 
@@ -106,7 +350,27 @@ paths:
               schema:
                 type: object
                 properties:
-                  # Define the properties of the Contrato Social data here
+                  empresa_nome:
+                    type: string
+                    example: "Empresa XYZ"
+                  empresa_cnpj:
+                    type: string
+                    example: "12.345.678/0001-90"
+                  empresa_endereco:
+                    type: string
+                    example: "Rua ABC, 123"
+                  socio_nome:
+                    type: string
+                    example: "John Doe"
+                  socio_cpf:
+                    type: string
+                    example: "123.456.789-00"
+                  socio_estado_civil:
+                    type: string
+                    example: "Casado"
+                  socio_endereco:
+                    type: string
+                    example: "Rua DEF, 456"
       security:
         - ApiKeyAuth: []
 
