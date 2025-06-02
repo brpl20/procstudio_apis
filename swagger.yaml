@@ -1,7 +1,11 @@
 openapi: 3.0.0
 info:
-  title: ProcStudio APIs externas 
-  description: Legal Data API para consulta de informações de advogados por OAB e Processamento de Documentos - Document Processing (OCR)
+  title: ProcStudio APIs Externas
+  description: |
+    Documentação abrangente para as APIs externas da ProcStudio, incluindo:
+    
+    * **Legal Data API**: Para consulta de informações de advogados por OAB.
+    * **Document Processing (OCR) API**: Para processamento de documentos (CNH, Contrato Social, Comprovante de Residência) usando OCR e IA.
   version: 1.0.0
   termsOfService: "pending"
   contact:
@@ -11,281 +15,105 @@ info:
 
 servers:
   - url: http://168.231.90.14/api/v1
-    description: Legal Data API Server
+    description: Servidor da Legal Data API
   - url: https://168.231.91.47/api/v1
-    description: Document Processing (OCR) API Server
+    description: Servidor da Document Processing (OCR) API
+
+tags:
+  - name: Legal Data
+    description: Endpoints para consulta de dados jurídicos (Advogados, OAB).
+  - name: Document Processing
+    description: Endpoints para processamento de documentos (CNH, Contrato Social, Comprovante de Residência) via OCR e IA.
+  - name: Document Management
+    description: Endpoints para consulta e gerenciamento de documentos processados.
+  - name: System
+    description: Endpoints de saúde e status do sistema.
 
 paths:
-  lawyer/{oab_number}:
+  /lawyer/{oab_number}:
     get:
-      summary: Get Lawyer Information
+      tags:
+        - Legal Data
+      summary: Obter Informações do Advogado
+      description: Retorna informações detalhadas de um advogado com base no número da OAB.
       parameters:
         - name: oab_number
           in: path
           required: true
-          description: The State followed by _ and number of the lawyer - PR_54159
+          description: OAB do advogado no formato Estado_Número (Ex: PR_54159)
           schema:
             type: string
+            example: PR_54159
       responses:
         '200':
-          description: Successful response with lawyer information
+          description: Resposta bem-sucedida com informações do advogado.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  id:
-                    type: integer
-                    example: 328782
-                  full_name:
-                    type: string
-                    example: "BRUNO PELLIZZETTI"
-                  oab_number:
-                    type: string
-                    example: "54159"
-                  city:
-                    type: string
-                    example: "CASCAVEL"
-                  state:
-                    type: string
-                    example: "PR"
-                  address:
-                    type: string
-                    example: "RUA PARANA, Nº 3033 SL 143, CENTRO."
-                  zip_code:
-                    type: string
-                    example: "Bsst0010"
-                  phone_number_1:
-                    type: string
-                    example: "(45)8405-5504"
-                  phone_number_2:
-                    type: string
-                    nullable: true
-                    example: null
-                  profile_picture:
-                    type: string
-                    example: "https://oabapi-profile-pic.s3.amazonaws.com/PR_54159_profile_pic.jpg"
-                  cna_picture:
-                    type: string
-                    example: "PR_54159.jpg"
-                  situation:
-                    type: string
-                    example: "situação regular"
-                  suplementary:
-                    type: boolean
-                    example: false
-                  is_procstudio:
-                    type: string
-                    nullable: true
-                    example: null
-                  has_society:
-                    type: string
-                    nullable: true
-                    example: null
-                  society_id:
-                    type: string
-                    nullable: true
-                    example: null
-                  specialty:
-                    type: string
-                    nullable: true
-                    example: null
-                  bio:
-                    type: string
-                    nullable: true
-                    example: null
-                  email:
-                    type: string
-                    nullable: true
-                    example: null
-                  instagram:
-                    type: string
-                    nullable: true
-                    example: null
-                  website:
-                    type: string
-                    nullable: true
-                    example: null
-                  created_at:
-                    type: string
-                    format: date-time
-                    example: "2025-04-24T13:12:23.955Z"
-                  updated_at:
-                    type: string
-                    format: date-time
-                    example: "2025-04-24T13:12:23.955Z"
-                  oab_id:
-                    type: string
-                    example: "PR_54159"
-                  profession:
-                    type: string
-                    example: "ADVOGADO"
-                  folder_id:
-                    type: string
-                    example: "Pasta16_cropped"
-                  original_address:
-                    type: string
-                    example: "RUA PARANA, Nº 3033 SL 143, CENTRO.\nCASCAVEL - PR\nBsst0010"
+                $ref: '#/components/schemas/LawyerInfo'
+        '400':
+          description: Requisição inválida ou OAB não encontrada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: API Key inválida ou ausente.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
       security:
         - ApiKeyAuth: []
 
   /lawyer/{oab_number}/debug:
     get:
-      summary: Get Lawyer Information in Debug Mode
+      tags:
+        - Legal Data
+      summary: Obter Informações do Advogado (Modo Debug)
+      description: Retorna informações detalhadas do advogado e dados de debug da requisição.
       parameters:
         - name: oab_number
           in: path
           required: true
-          description: The OAB number of the lawyer
+          description: OAB do advogado
           schema:
             type: string
+            example: PR_54159
       responses:
         '200':
-          description: Successful response with lawyer information in debug mode
+          description: Resposta bem-sucedida com informações do advogado em modo debug.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  status_validation:
-                    type: object
-                    properties:
-                      valid:
-                        type: boolean
-                        example: true
-                      message:
-                        type: string
-                        example: "Situação regular"
-                      code:
-                        type: string
-                        example: "active"
-                  regular_view:
-                    type: object
-                    properties:
-                      situation:
-                        type: string
-                        example: "situação regular"
-                      full_name:
-                        type: string
-                        example: "BRUNO PELLIZZETTI"
-                      oab_number:
-                        type: string
-                        example: "54159"
-                      city:
-                        type: string
-                        example: "CASCAVEL"
-                      state:
-                        type: string
-                        example: "PR"
-                      address:
-                        type: string
-                        example: "RUA PARANA, Nº 3033 SL 143, CENTRO."
-                      original_address:
-                        type: string
-                        example: "RUA PARANA, Nº 3033 SL 143, CENTRO.\nCASCAVEL - PR\nBsst0010"
-                      zip_code:
-                        type: string
-                        example: "Bsst0010"
-                      phone_number_1:
-                        type: string
-                        example: "(45)8405-5504"
-                      phone_number_2:
-                        type: string
-                        nullable: true
-                        example: null
-                      supplementary:
-                        type: boolean
-                        example: false
-                      profession:
-                        type: string
-                        example: "ADVOGADO"
-                      profile_picture:
-                        type: string
-                        example: "https://oabapi-profile-pic.s3.amazonaws.com/PR_54159_profile_pic.jpg"
-                  debug_info:
-                    type: object
-                    properties:
-                      folder_id:
-                        type: string
-                        example: "Pasta16_cropped"
-                      cna_picture:
-                        type: string
-                        example: "https://oabapi.s3.amazonaws.com/PR_54159.jpg"
-                      is_procstudio:
-                        type: string
-                        nullable: true
-                        example: null
-                      has_society:
-                        type: string
-                        nullable: true
-                        example: null
-                      society_id:
-                        type: string
-                        nullable: true
-                        example: null
-                      specialty:
-                        type: string
-                        nullable: true
-                        example: null
-                      bio:
-                        type: string
-                        nullable: true
-                        example: null
-                      email:
-                        type: string
-                        nullable: true
-                        example: null
-                      instagram:
-                        type: string
-                        nullable: true
-                        example: null
-                      website:
-                        type: string
-                        nullable: true
-                        example: null
-                      created_at:
-                        type: string
-                        format: date-time
-                        example: "2025-04-24T13:12:23.955Z"
-                      updated_at:
-                        type: string
-                        format: date-time
-                        example: "2025-04-24T13:12:23.955Z"
-                  request_context:
-                    type: object
-                    properties:
-                      requester:
-                        type: object
-                        properties:
-                          user_id:
-                            type: integer
-                            example: 1
-                          api_key_id:
-                            type: integer
-                            example: 1
-                      ip:
-                        type: string
-                        example: "201.21.161.236"
-                      user_agent:
-                        type: string
-                        example: "curl/8.7.1"
-                      request_time:
-                        type: string
-                        format: date-time
-                        example: "2025-05-13T17:31:15.482+00:00"
-                      response_time:
-                        type: string
-                        format: date-time
-                        example: "2025-05-13T17:31:15.489+00:00"
-                      duration_ms:
-                        type: number
-                        example: 7.22
+                $ref: '#/components/schemas/LawyerDebugInfo'
+        '400':
+          description: Requisição inválida ou OAB não encontrada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: API Key inválida ou ausente.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
       security:
         - ApiKeyAuth: []
 
-  /cnh:
+  /process/cnh:
     post:
-      summary: Process CNH Document
+      tags:
+        - Document Processing
+      summary: Processar Documento CNH
+      description: |
+        Processa uma Carteira Nacional de Habilitação (CNH) V1 ou V2 usando OCR e IA.
+        
+        ### Dados Extraídos:
+        - Nome completo do portador, CPF, RG, Data de nascimento
+        - Nome do pai e da mãe
+        - Scores de confiança para cada campo e correções automáticas por IA.
       requestBody:
         required: true
         content:
@@ -293,45 +121,52 @@ paths:
             schema:
               type: object
               properties:
-                image:
+                file:
                   type: string
                   format: binary
+                  description: Arquivo de imagem da CNH (JPG, PNG, PDF)
+              required:
+                - file
       responses:
         '200':
-          description: Successful response with structured data from CNH
+          description: CNH processada com sucesso.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  name:
-                    type: string
-                    example: "John Doe"
-                  cpf:
-                    type: string
-                    example: "123.456.789-00"
-                  rg:
-                    type: string
-                    example: "MG-12.345.678"
-                  nascimento:
-                    type: string
-                    format: date
-                    example: "1990-01-01"
-                  nome_do_pai:
-                    type: string
-                    example: "John Doe Sr."
-                  nome_da_mae:
-                    type: string
-                    example: "Jane Doe"
-                  picture_3x4:
-                    type: string
-                    example: "https://example.com/picture.jpg"
+                $ref: '#/components/schemas/CNHProcessedResponse'
+        '400':
+          description: Erro na requisição (arquivo inválido, formato não suportado).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: API Key inválida ou ausente.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Erro interno do servidor.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
       security:
         - ApiKeyAuth: []
 
-  /cs:
+  /process/contrato-social:
     post:
-      summary: Process Contrato Social Document
+      tags:
+        - Document Processing
+      summary: Processar Documento Contrato Social
+      description: |
+        Processa um documento de Contrato Social de empresa usando OCR e IA.
+        
+        ### Dados Extraídos:
+        - Razão social da empresa, CNPJ, Endereço completo
+        - Data de constituição, Objeto social
+        - Dados completos do sócio administrador.
       requestBody:
         required: true
         content:
@@ -339,44 +174,51 @@ paths:
             schema:
               type: object
               properties:
-                image:
+                file:
                   type: string
                   format: binary
+                  description: Arquivo PDF do Contrato Social
+              required:
+                - file
       responses:
         '200':
-          description: Successful response with structured data from Contrato Social
+          description: Contrato Social processado com sucesso.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  empresa_nome:
-                    type: string
-                    example: "Empresa XYZ"
-                  empresa_cnpj:
-                    type: string
-                    example: "12.345.678/0001-90"
-                  empresa_endereco:
-                    type: string
-                    example: "Rua ABC, 123"
-                  socio_nome:
-                    type: string
-                    example: "John Doe"
-                  socio_cpf:
-                    type: string
-                    example: "123.456.789-00"
-                  socio_estado_civil:
-                    type: string
-                    example: "Casado"
-                  socio_endereco:
-                    type: string
-                    example: "Rua DEF, 456"
+                $ref: '#/components/schemas/ContratoSocialProcessedResponse'
+        '400':
+          description: Erro na requisição (arquivo inválido, formato não suportado).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: API Key inválida ou ausente.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Erro interno do servidor.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
       security:
         - ApiKeyAuth: []
 
-  /cr:
+  /process/comprovante-residencia:
     post:
-      summary: Process Comprovante de Residência Document
+      tags:
+        - Document Processing
+      summary: Processar Documento Comprovante de Residência
+      description: |
+        Processa um Comprovante de Residência (conta de luz, água, telefone, etc.) usando OCR e IA.
+        
+        ### Dados Extraídos:
+        - Nome do titular, Endereço completo, Cidade, Estado, CEP
+        - Scores de confiança e validação opcional de nome.
       requestBody:
         required: true
         content:
@@ -384,24 +226,794 @@ paths:
             schema:
               type: object
               properties:
-                image:
+                file:
                   type: string
                   format: binary
+                  description: Arquivo do comprovante (PDF, JPG, PNG)
+                name:
+                  type: string
+                  description: Nome opcional para validação
+                  example: "João da Silva"
+              required:
+                - file
       responses:
         '200':
-          description: Successful response with structured data from Comprovante de Residência
+          description: Comprovante de Residência processado com sucesso.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComprovanteResidenciaProcessedResponse'
+        '400':
+          description: Erro na requisição (arquivo inválido, formato não suportado).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: API Key inválida ou ausente.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Erro interno do servidor.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - ApiKeyAuth: []
+
+  /documents:
+    get:
+      tags:
+        - Document Management
+      summary: Listar Documentos
+      description: |
+        Lista documentos processados com filtros opcionais.
+        
+        ### Filtros Disponíveis:
+        - Tipo de documento (CNH, CS, CR)
+        - Limite de resultados
+      parameters:
+        - name: tipo_documento
+          in: query
+          description: Filtrar por tipo de documento
+          required: false
+          schema:
+            type: string
+            enum: [CNH, CS, CR]
+        - name: limit
+          in: query
+          description: Número máximo de documentos a retornar
+          required: false
+          schema:
+            type: integer
+            default: 100
+            minimum: 1
+            maximum: 1000
+      responses:
+        '200':
+          description: Lista de documentos.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DocumentoResponse'
+        '403':
+          description: API Key inválida ou ausente.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Erro interno do servidor.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - ApiKeyAuth: []
+
+  /documents/{document_id}:
+    get:
+      tags:
+        - Document Management
+      summary: Detalhes do Documento
+      description: |
+        Busca um documento específico com todos os dados extraídos.
+        
+        ### Informações Retornadas:
+        - Metadados do documento
+        - Dados extraídos específicos do tipo
+        - Status de processamento
+        - Mensagens de erro (se houver)
+      parameters:
+        - name: document_id
+          in: path
+          required: true
+          description: ID do documento
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Detalhes do documento.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentDetailsResponse'
+        '404':
+          description: Documento não encontrado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: API Key inválida ou ausente.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Erro interno do servidor.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - ApiKeyAuth: []
+
+  /documents/errors:
+    get:
+      tags:
+        - Document Management
+      summary: Listar Documentos com Erro
+      description: |
+        Lista documentos que falharam no processamento.
+        
+        ### Útil Para:
+        - Identificar problemas recorrentes
+        - Reprocessar documentos com falha
+        - Monitoramento de qualidade
+      parameters:
+        - name: limit
+          in: query
+          description: Número máximo de documentos a retornar
+          required: false
+          schema:
+            type: integer
+            default: 100
+            minimum: 1
+            maximum: 1000
+      responses:
+        '200':
+          description: Lista de documentos com erro.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DocumentoResponse'
+        '403':
+          description: API Key inválida ou ausente.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Erro interno do servidor.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - ApiKeyAuth: []
+
+  /documents/stats:
+    get:
+      tags:
+        - Document Management
+      summary: Obter Estatísticas de Documentos
+      description: |
+        Retorna estatísticas de processamento por tipo de documento.
+        
+        ### Métricas Incluídas:
+        - Contagem por tipo de documento
+        - Total geral processado
+        - Distribuição percentual
+      responses:
+        '200':
+          description: Estatísticas de documentos.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DocumentStats'
+        '403':
+          description: API Key inválida ou ausente.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Erro interno do servidor.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - ApiKeyAuth: []
+
+  /health:
+    get:
+      tags:
+        - System
+      summary: Health Check
+      description: Verifica se a API de Processamento de Documentos está funcionando corretamente.
+      responses:
+        '200':
+          description: API está saudável.
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  # Define the properties of the Comprovante de Residência data here
-      security:
-        - ApiKeyAuth: []
+                  status:
+                    type: string
+                    example: "healthy"
+                  version:
+                    type: string
+                    example: "1.2.0"
 
 components:
+  schemas:
+    LawyerInfo:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 328782
+        full_name:
+          type: string
+          example: "BRUNO PELLIZZETTI"
+        oab_number:
+          type: string
+          example: "54159"
+        city:
+          type: string
+          example: "CASCAVEL"
+        state:
+          type: string
+          example: "PR"
+        address:
+          type: string
+          example: "RUA PARANA, Nº 3033 SL 143, CENTRO."
+        zip_code:
+          type: string
+          example: "Bsst0010"
+        phone_number_1:
+          type: string
+          example: "(45)8405-5504"
+        phone_number_2:
+          type: string
+          nullable: true
+          example: null
+        profile_picture:
+          type: string
+          example: "https://oabapi-profile-pic.s3.amazonaws.com/PR_54159_profile_pic.jpg"
+        cna_picture:
+          type: string
+          example: "PR_54159.jpg"
+        situation:
+          type: string
+          example: "situação regular"
+        suplementary:
+          type: boolean
+          example: false
+        is_procstudio:
+          type: string
+          nullable: true
+          example: null
+        has_society:
+          type: string
+          nullable: true
+          example: null
+        society_id:
+          type: string
+          nullable: true
+          example: null
+        specialty:
+          type: string
+          nullable: true
+          example: null
+        bio:
+          type: string
+          nullable: true
+          example: null
+        email:
+          type: string
+          nullable: true
+          example: null
+        instagram:
+          type: string
+          nullable: true
+          example: null
+        website:
+          type: string
+          nullable: true
+          example: null
+        created_at:
+          type: string
+          format: date-time
+          example: "2025-04-24T13:12:23.955Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2025-04-24T13:12:23.955Z"
+        oab_id:
+          type: string
+          example: "PR_54159"
+        profession:
+          type: string
+          example: "ADVOGADO"
+        folder_id:
+          type: string
+          example: "Pasta16_cropped"
+        original_address:
+          type: string
+          example: "RUA PARANA, Nº 3033 SL 143, CENTRO.\nCASCAVEL - PR\nBsst0010"
+
+    LawyerDebugInfo:
+      type: object
+      properties:
+        status_validation:
+          type: object
+          properties:
+            valid:
+              type: boolean
+              example: true
+            message:
+              type: string
+              example: "Situação regular"
+            code:
+              type: string
+              example: "active"
+        regular_view:
+          type: object
+          properties:
+            situation:
+              type: string
+              example: "situação regular"
+            full_name:
+              type: string
+              example: "BRUNO PELLIZZETTI"
+            oab_number:
+              type: string
+              example: "54159"
+            city:
+              type: string
+              example: "CASCAVEL"
+            state:
+              type: string
+              example: "PR"
+            address:
+              type: string
+              example: "RUA PARANA, Nº 3033 SL 143, CENTRO."
+            original_address:
+              type: string
+              example: "RUA PARANA, Nº 3033 SL 143, CENTRO.\nCASCAVEL - PR\nBsst0010"
+            zip_code:
+              type: string
+              example: "Bsst0010"
+            phone_number_1:
+              type: string
+              example: "(45)8405-5504"
+            phone_number_2:
+              type: string
+              nullable: true
+              example: null
+            supplementary:
+              type: boolean
+              example: false
+            profession:
+              type: string
+              example: "ADVOGADO"
+            profile_picture:
+              type: string
+              example: "https://oabapi-profile-pic.s3.amazonaws.com/PR_54159_profile_pic.jpg"
+        debug_info:
+          type: object
+          properties:
+            folder_id:
+              type: string
+              example: "Pasta16_cropped"
+            cna_picture:
+              type: string
+              example: "https://oabapi.s3.amazonaws.com/PR_54159.jpg"
+            is_procstudio:
+              type: string
+              nullable: true
+              example: null
+            has_society:
+              type: string
+              nullable: true
+              example: null
+            society_id:
+              type: string
+              nullable: true
+              example: null
+            specialty:
+              type: string
+              nullable: true
+              example: null
+            bio:
+              type: string
+              nullable: true
+              example: null
+            email:
+              type: string
+              nullable: true
+              example: null
+            instagram:
+              type: string
+              nullable: true
+              example: null
+            website:
+              type: string
+              nullable: true
+              example: null
+            created_at:
+              type: string
+              format: date-time
+              example: "2025-04-24T13:12:23.955Z"
+            updated_at:
+              type: string
+              format: date-time
+              example: "2025-04-24T13:12:23.955Z"
+        request_context:
+          type: object
+          properties:
+            requester:
+              type: object
+              properties:
+                user_id:
+                  type: integer
+                  example: 1
+                api_key_id:
+                  type: integer
+                  example: 1
+            ip:
+              type: string
+              example: "201.21.161.236"
+            user_agent:
+              type: string
+              example: "curl/8.7.1"
+            request_time:
+              type: string
+              format: date-time
+              example: "2025-05-13T17:31:15.482+00:00"
+            response_time:
+              type: string
+              format: date-time
+              example: "2025-05-13T17:31:15.489+00:00"
+            duration_ms:
+              type: number
+              example: 7.22
+
+    CNHProcessedResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: "CNH processed successfully"
+        document_id:
+          type: integer
+          example: 123
+          description: ID do documento salvo no banco de dados
+        data:
+          type: object
+          properties:
+            versao_cnh:
+              type: string
+              example: "V2"
+              description: Versão da CNH (V1 ou V2)
+            nome:
+              type: string
+              example: "JOÃO DA SILVA SANTOS"
+            confidence_nome:
+              type: number
+              format: float
+              example: 0.95
+            corrected_nome_by_ia:
+              type: string
+              example: "JOÃO DA SILVA SANTOS"
+              nullable: true
+            cpf:
+              type: string
+              example: "123.456.789-00"
+            confidence_cpf:
+              type: number
+              format: float
+              example: 0.98
+            corrected_cpf_by_ia:
+              type: string
+              example: "123.456.789-00"
+              nullable: true
+            rg:
+              type: string
+              example: "MG-12.345.678"
+            confidence_rg:
+              type: number
+              format: float
+              example: 0.92
+            corrected_rg_by_ia:
+              type: string
+              example: "MG-12.345.678"
+              nullable: true
+            nascimento:
+              type: string
+              example: "15/03/1990"
+              description: Data no formato dd/mm/yyyy
+            confidence_nascimento:
+              type: number
+              format: float
+              example: 0.96
+            corrected_nascimento_by_ia:
+              type: string
+              example: "15/03/1990"
+              nullable: true
+            pai:
+              type: string
+              example: "JOSÉ SANTOS"
+            confidence_pai:
+              type: number
+              format: float
+              example: 0.89
+            corrected_pai_by_ia:
+              type: string
+              example: "JOSÉ SANTOS"
+              nullable: true
+            mae:
+              type: string
+              example: "MARIA SILVA SANTOS"
+            confidence_mae:
+              type: number
+              format: float
+              example: 0.93
+            corrected_mae_by_ia:
+              type: string
+              example: "MARIA SILVA SANTOS"
+              nullable: true
+
+    ContratoSocialProcessedResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: "Contrato Social processed successfully"
+        document_id:
+          type: integer
+          example: 124
+        data:
+          type: object
+          properties:
+            razao_social:
+              type: string
+              example: "EMPRESA XYZ LTDA"
+            cnpj:
+              type: string
+              example: "12.345.678/0001-90"
+            endereco_completo:
+              type: string
+              example: "RUA DAS FLORES, 123, CENTRO, SÃO PAULO/SP, CEP: 01234-567"
+            data_constituicao:
+              type: string
+              example: "15/06/2020"
+              description: Data no formato dd/mm/yyyy
+            objeto_social:
+              type: string
+              example: "Comércio varejista de produtos diversos"
+            socio_administrador_nome:
+              type: string
+              example: "JOÃO DA SILVA SANTOS"
+            socio_administrador_cpf:
+              type: string
+              example: "123.456.789-00"
+            socio_administrador_rg:
+              type: string
+              example: "MG-12.345.678"
+            socio_administrador_endereco:
+              type: string
+              example: "RUA DAS PALMEIRAS, 456, VILA NOVA, SÃO PAULO/SP"
+            socio_administrador_nacionalidade:
+              type: string
+              example: "BRASILEIRA"
+            socio_administrador_estado_civil:
+              type: string
+              example: "CASADO"
+            socio_administrador_profissao:
+              type: string
+              example: "EMPRESÁRIO"
+
+    ComprovanteResidenciaProcessedResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: "Comprovante de Residência processed successfully"
+        document_id:
+          type: integer
+          example: 125
+        data:
+          type: object
+          properties:
+            nome:
+              type: string
+              example: "JOÃO DA SILVA SANTOS"
+            confidence_nome:
+              type: number
+              format: float
+              example: 0.94
+            corrected_nome_by_ia:
+              type: string
+              example: "JOÃO DA SILVA SANTOS"
+              nullable: true
+            unmatched_name_warning:
+              type: boolean
+              example: false
+              description: Indica se o nome fornecido não confere com o extraído
+            address_line_1:
+              type: string
+              example: "RUA DAS FLORES, 123"
+            confidence_line_1:
+              type: number
+              format: float
+              example: 0.96
+            address_line_2:
+              type: string
+              example: "APARTAMENTO 45, BLOCO B"
+              nullable: true
+            confidence_line_2:
+              type: number
+              format: float
+              example: 0.88
+              nullable: true
+            city:
+              type: string
+              example: "SÃO PAULO"
+            confidence_city:
+              type: number
+              format: float
+              example: 0.97
+            state:
+              type: string
+              example: "SP"
+            confidence_state:
+              type: number
+              format: float
+              example: 0.99
+            zip:
+              type: string
+              example: "01234-567"
+            confidence_zip:
+              type: number
+              format: float
+              example: 0.95
+
+    DocumentoResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 123
+        tipo_documento:
+          type: string
+          enum: [CNH, CS, CR]
+          example: "CNH"
+        nome_arquivo_original:
+          type: string
+          example: "documento.pdf"
+        caminho_arquivo_armazenado:
+          type: string
+          nullable: true
+          example: "/uploads/abc-123.pdf"
+        data_processamento:
+          type: string
+          format: date-time
+          example: "2024-01-15T10:30:00Z"
+        status_processamento:
+          type: string
+          enum: [sucesso, falha]
+          example: "sucesso"
+        mensagem_erro:
+          type: string
+          nullable: true
+          example: null
+        api_key_usada:
+          type: string
+          nullable: true
+          example: "key_abc123"
+
+    DocumentDetailsResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 123
+        tipo_documento:
+          type: string
+          example: "CNH"
+        nome_arquivo_original:
+          type: string
+          example: "cnh_joao.jpg"
+        caminho_arquivo_armazenado:
+          type: string
+          example: "/uploads/abc-123.jpg"
+          nullable: true
+        data_processamento:
+          type: string
+          format: date-time
+          example: "2024-01-15T10:30:00Z"
+        status_processamento:
+          type: string
+          enum: [sucesso, falha]
+          example: "sucesso"
+        mensagem_erro:
+          type: string
+          nullable: true
+          example: null
+        api_key_usada:
+          type: string
+          nullable: true
+          example: "key_abc123"
+        dados_extraidos:
+          type: object
+          nullable: true
+          description: Dados específicos baseados no tipo do documento. Pode ser um CNHProcessedResponse.data, ContratoSocialProcessedResponse.data ou ComprovanteResidenciaProcessedResponse.data
+
+    DocumentStats:
+      type: object
+      properties:
+        tipo_documento:
+          type: string
+          example: "CNH"
+        quantidade:
+          type: integer
+          example: 150
+
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+          example: "Error message description"
+        detail:
+          type: string
+          example: "Detailed error information"
+
   securitySchemes:
     ApiKeyAuth:
       type: apiKey
       in: header
-      name: X-Api-Key
+      name: X-API-Key
+      description: |
+        API Key para autenticação. Deve ser incluída no cabeçalho de todas as requisições protegidas.
+        
+        **Exemplo de uso:**
+        ```
+        X-API-Key: your_api_key_here
+        ```
