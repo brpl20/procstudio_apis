@@ -16,7 +16,7 @@ info:
 servers:
   - url: http://168.231.90.14/api/v1
     description: Servidor da Legal Data API
-  - url: https://168.231.91.47/api/v1
+  - url: https://168.231.91.47:8000
     description: Servidor da Document Processing (OCR) API
 
 tags:
@@ -103,57 +103,57 @@ paths:
         - ApiKeyAuth: []
 
   /process/cnh:
-    post:
-      tags:
-        - Document Processing
-      summary: Processar Documento CNH
-      description: |
-        Processa uma Carteira Nacional de Habilitação (CNH) V1 ou V2 usando OCR e IA.
-        
-        ### Dados Extraídos:
-        - Nome completo do portador, CPF, RG, Data de nascimento
-        - Nome do pai e da mãe
-        - Scores de confiança para cada campo e correções automáticas por IA.
-      requestBody:
-        required: true
-        content:
-          multipart/form-data:
-            schema:
-              type: object
-              properties:
-                file:
-                  type: string
-                  format: binary
-                  description: Arquivo de imagem da CNH (JPG, PNG, PDF)
-              required:
-                - file
-      responses:
-        '200':
-          description: CNH processada com sucesso.
+      post:
+        tags:
+          - Document Processing
+        summary: Processar Documento CNH
+        description: |
+          Processa uma Carteira Nacional de Habilitação (CNH) V1 ou V2 usando OCR e IA.
+          
+          ### Dados Extraídos:
+          - Nome completo do portador, CPF, RG, Data de nascimento
+          - Nome do pai e da mãe
+          - Scores de confiança para cada campo e correções automáticas por IA.
+        requestBody:
+          required: true
           content:
-            application/json:
+            multipart/form-data:
               schema:
-                $ref: '#/components/schemas/CNHProcessedResponse'
-        '400':
-          description: Erro na requisição (arquivo inválido, formato não suportado).
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: API Key inválida ou ausente.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '500':
-          description: Erro interno do servidor.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      security:
-        - ApiKeyAuth: []
+                type: object
+                properties:
+                  file:
+                    type: string
+                    format: binary
+                    description: Arquivo de imagem da CNH (JPG, PNG, PDF)
+                required:
+                  - file
+        responses:
+          '200':
+            description: CNH processada com sucesso.
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/CNHProcessedResponse'
+          '400':
+            description: Erro na requisição (arquivo inválido, formato não suportado).
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/ErrorResponse'
+          '403':
+            description: API Key inválida ou ausente.
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/ErrorResponse'
+          '500':
+            description: Erro interno do servidor.
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/ErrorResponse'
+        security:
+          - ApiKeyAuth: [] # Isso já associa o cabeçalho X-API-Key
 
   /process/contrato-social:
     post:
