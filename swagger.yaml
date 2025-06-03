@@ -40,7 +40,7 @@ paths:
         - name: oab_number
           in: path
           required: true
-          description: OAB do advogado no formato Estado_Número (Ex: PR_54159)
+          description: OAB do advogado no formato Estado_Número (Ex PR_54159)
           schema:
             type: string
             example: PR_54159
