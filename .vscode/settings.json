@@ -1,0 +1,5 @@
+{
+    "yaml.schemas": {
+        "https://json.schemastore.org/yamllint.json": "file:///home/brpl/code/procstudio_apis/swagger.yaml"
+    }
+}
